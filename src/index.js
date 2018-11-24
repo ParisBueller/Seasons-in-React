@@ -5,15 +5,28 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         //our state object will contain data relevant to our component
-        this.state = { lat: null };
+        //this.state ONLY to be called to initialize state in constructor function
+        this.state = { lat: null, errorMessage: '' };
     }
-    render() {
-        window.navigator.geolocation.getCurrentPosition(
-            position => console.log(position),
-            err => console.log(err)
-        );
 
-        return <div>Latitude: </div>;
+    componentDidMount() {   
+        window.navigator.geolocation.getCurrentPosition(
+            // to UPDATE or CHANGE our state we ALWAYS call setState!
+            position =>  this.setState({ lat: position.coords.latitude }),         
+            err =>  this.setState({ errorMessage: err.message })          
+        );
+    }
+
+    render() {
+        if(this.state.errorMessage && !this.state.lat) {
+            return <div>Error: {this.state.errorMessage}</div>
+        }
+
+        if(!this.state.errorMessage && this.state.lat) {
+            return <div>Latitude: {this.state.lat}</div>
+        }
+
+        return <div>Loading...</div>
     }
 }
 
